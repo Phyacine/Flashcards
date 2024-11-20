@@ -8,23 +8,50 @@ using System.Threading.Tasks;
 
 namespace Flashcards.DatabaseActions
 {
-    internal static class LoadStacks
+    internal class LoadStacks
     {
         public static List<StackItem> Stacks = new List<StackItem>();
 
-        public static void CreateTables(string connectionString)
+        public void CreateStacks(string connectionString)
         {
-            var stacksQuery = "CREATE TABLE Stacks(" +
+            
+            string stacksQuery = "IF NOT EXISTS (SELECT * FROM sys.Tables " +
+                "WHERE Name = 'Stacks')" +
+                "BEGIN CREATE TABLE Stacks(" +
                 "Category nvarchar(50) NOT NULL," +
-                "StackId int NOT NULL AUTO_INCREMENT" +
-                "PRIMARY KEY(StackId)";
+                "StackId int PRIMARY KEY IDENTITY); " +
+                " END" ;
+            Execute(connectionString, stacksQuery);
+
+
+
+        }
+        public void CreateCards(string connectionString)
+        {
+            string flashCardsQuery = "IF NOT EXISTS (SELECT * FROM sys.Tables " +
+                "WHERE Name = 'Cards')" +
+                "BEGIN CREATE TABLE Cards(" +
+                "CardId INT IDENTITY(1, 1) PRIMARY KEY," +
+                "Question NVARCHAR(MAX)," +
+                "Answer NVARCHAR(MAX)," +
+                "StackId INT NOT NULL FOREIGN KEY REFERENCES Stacks(StackId) ON DELETE CASCADE); END ";
+            Execute(connectionString, flashCardsQuery);
+        }
+
+        public void Execute(string connectionString, string query)
+        {
             using(var connection = new SqlConnection(connectionString))
             {
-                connection.Open();
-                var command = new SqlCommand(stacksQuery, connection);
-                //command.
+                try
+                {
+                    connection.Open();
+                    using(var command = new SqlCommand(query, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+                catch { }
             }
-
 
         }
         public static List<StackItem> Load(string connectionString)

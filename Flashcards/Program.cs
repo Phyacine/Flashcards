@@ -11,23 +11,16 @@ namespace Flashcards
     {
         static void Main(string[] args)
         {
+            LoadStacks loadDb = new LoadStacks();
             string connectionString = "Server=DESKTOP-1758C90;Database=Flashcards;User=user;Password=password;TrustServerCertificate=True";
             SqlConnection connection = new SqlConnection(connectionString);
             List<StackItem> Stacks = new List<StackItem>();
             try
             {
                 connection.Open();
-                Stacks = LoadStacks.Load(connectionString);
-                foreach(StackItem a in Stacks)
-                {
-                    Console.WriteLine(a.StackId + " " + a.StackName);
+                loadDb.CreateStacks(connectionString);
+                loadDb.CreateCards(connectionString);
 
-                    foreach(FlashCardDto b in a.FlashCards)
-                    {
-                        Console.WriteLine(b.Question);
-                    }
-                }
-                Console.WriteLine("Connected");
             }
             catch(Exception ex)
             {
