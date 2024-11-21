@@ -1,26 +1,24 @@
 ﻿
 using Flashcards.DatabaseActions;
+using Flashcards.Items;
 using Flashcards.NewFolder;
 using Flashcards.UserInterface;
 using Microsoft.Data.SqlClient;
+using System.Configuration;
 
 
 namespace Flashcards
 {
     internal class Program
     {
+        
         static void Main(string[] args)
         {
-            LoadStacks loadDb = new LoadStacks();
-            string connectionString = "Server=DESKTOP-1758C90;Database=Flashcards;User=user;Password=password;TrustServerCertificate=True";
-            SqlConnection connection = new SqlConnection(connectionString);
-            List<StackItem> Stacks = new List<StackItem>();
+
             try
             {
-                connection.Open();
-                loadDb.CreateStacks(connectionString);
-                loadDb.CreateCards(connectionString);
-
+                CreateTables createTables = new CreateTables();
+                ListStore listStore = new ListStore();
             }
             catch(Exception ex)
             {
@@ -28,9 +26,17 @@ namespace Flashcards
             }
             finally
             {
-                connection.Close();
+                
             }
-            MainMenu.MenuOptions(connectionString);
+            foreach(StackItem a in ListStore.Stacks)
+            {
+                Console.WriteLine(a.StackName);
+                foreach(FlashCardDto b in a.FlashCards)
+                {
+                    Console.WriteLine(b.Question);
+                }
+            }
+
             Console.ReadKey();
 
         }

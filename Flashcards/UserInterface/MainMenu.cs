@@ -1,4 +1,5 @@
 ﻿using Flashcards.DatabaseActions;
+using Flashcards.Items;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,8 @@ namespace Flashcards.UserInterface
 {
     internal static class MainMenu
     {
-        public static void MenuOptions(string connectionString)
+        
+        public static void MenuOptions(string connectionString, ListStore store)
         {
             Console.WriteLine("Welcome! Please select an option");
 
@@ -23,9 +25,10 @@ namespace Flashcards.UserInterface
             switch (input)
             {
                 case "1":
-                    LoadStacks.AddStack(connectionString);
+                    
                     break;
                 case "2":
+
                     break;
                 case "3":
                     break;
@@ -35,6 +38,10 @@ namespace Flashcards.UserInterface
                     break;
             }
 
+        }
+        public static void ShowCategories(ListStore store)
+        {
+            
         }
 
         public static void CreateStack()
