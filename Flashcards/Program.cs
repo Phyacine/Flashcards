@@ -1,9 +1,11 @@
 ﻿
-using Flashcards.DatabaseActions;
-using Flashcards.Items;
+using Flashcards.Controllers;
+using Flashcards.Helpers;
 using Flashcards.NewFolder;
-using Flashcards.UserInterface;
+using Flashcards.Stores;
+using Flashcards.Views;
 using Microsoft.Data.SqlClient;
+using Microsoft.IdentityModel.Protocols;
 using System.Configuration;
 
 
@@ -14,6 +16,7 @@ namespace Flashcards
         
         static void Main(string[] args)
         {
+            
 
             try
             {
@@ -28,15 +31,9 @@ namespace Flashcards
             {
                 
             }
-            foreach(StackItem a in ListStore.Stacks)
-            {
-                Console.WriteLine(a.StackName);
-                foreach(FlashCardDto b in a.FlashCards)
-                {
-                    Console.WriteLine(b.Question);
-                }
-            }
 
+            Navigation nav = new Navigation();
+            nav.MainMenu();
             Console.ReadKey();
 
         }

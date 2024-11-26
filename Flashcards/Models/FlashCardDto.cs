@@ -11,5 +11,6 @@ namespace Flashcards.NewFolder
         public int FlashCardId { get; set; }
         public string Question { get; set; }
         public string Answer { get; set; }
+        public int DtoId { get; set; }
     }
 }

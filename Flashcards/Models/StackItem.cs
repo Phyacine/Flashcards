@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Flashcards.NewFolder;
 
-namespace Flashcards.NewFolder
+namespace Flashcards.Models
 {
     internal class StackItem
     {

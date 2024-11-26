@@ -6,14 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Flashcards.NewFolder;
-using Flashcards.Items;
+using Flashcards.Models;
 
-namespace Flashcards.DatabaseActions
+namespace Flashcards.Controllers
 {
-    internal class PopulateLists
+    internal class PopulateListController
     {
         private readonly string ConnectionString;
-        public PopulateLists(string connectionString)
+        public PopulateListController(string connectionString)
         {
             ConnectionString = connectionString;
 
@@ -24,11 +24,12 @@ namespace Flashcards.DatabaseActions
             PopulateCard(cards);
             PopulateStack(stacks);
             PopulateStacks(stacks, cards);
+
         }
 
         public void PopulateCard(List<FlashCard> cards)
         {
-            
+            cards.Clear();
             using (var connection = new SqlConnection(ConnectionString))
             {
                 try
@@ -58,7 +59,7 @@ namespace Flashcards.DatabaseActions
         }
         public void PopulateStack(List<StackItem> stacks)
         {
-            
+            stacks.Clear();
             using (var connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
@@ -78,7 +79,7 @@ namespace Flashcards.DatabaseActions
                         }
                     }
                 }
-                
+
             }
         }
         public void PopulateStacks(List<StackItem> stacks, List<FlashCard> cards)
@@ -93,7 +94,9 @@ namespace Flashcards.DatabaseActions
                         {
                             FlashCardId = y.FlashCardId,
                             Question = y.Question,
-                            Answer = y.Answer
+                            Answer = y.Answer,
+                            DtoId = x.FlashCards.Count() + 1
+
                         });
 
                     }
