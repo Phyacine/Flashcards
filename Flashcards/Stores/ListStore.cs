@@ -3,6 +3,7 @@ using Flashcards.Helpers;
 using Flashcards.Models;
 using Flashcards.NewFolder;
 using Flashcards.Verification;
+using Flashcards.Views;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -18,11 +19,12 @@ namespace Flashcards.Stores
         public List<FlashCardDto> CardsDto;
         public static List<StackItem> Stacks;
         public DatabaseController dbAccess;
-        public Verifier Verifier;
-        PopulateListController popLists = new PopulateListController(Constants.ConnectionString);
+        public PopulateListController popLists;
 
         public ListStore()
         {
+            popLists = new PopulateListController(Constants.ConnectionString);
+            
             Cards = new List<FlashCard>();
             CardsDto = new List<FlashCardDto>();
             Stacks = new List<StackItem>();
@@ -35,15 +37,23 @@ namespace Flashcards.Stores
         {
             return Stacks.Find(a => a.StackId == int.Parse(id)).StackName;
         }
-
         public void GetHistory(string year)
         {
-            DataTable table =  dbAccess.GetStudyHistory(year);
+            Console.Clear();
+            DataTable table = dbAccess.GetStudyHistory(year);
 
             UIController ui = new UIController();
             ui.DisplayHistory(table);
-            
+
+            DataTable table2 = dbAccess.GetStudyAverages(year);
+            ui.DisplayHistory(table2);
+
+
+
+
+
         }
+
         public StackItem CurrentSelected()
         {
             return SelectedCategoryStore.SelectedCategory;

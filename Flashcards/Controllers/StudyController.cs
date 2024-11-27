@@ -1,6 +1,7 @@
 ﻿using Flashcards.Models;
 using Flashcards.NewFolder;
 using Flashcards.Stores;
+using Flashcards.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,13 @@ namespace Flashcards.Controllers
         UIController UI;
         bool finish;
         DatabaseController dbController;
+        Navigation nav;
 
         public StudyController()
         {
             finish = false;
             Category = SelectedCategoryStore.SelectedCategory;
+            nav = new Navigation();
             dbController = new DatabaseController();
             UI = new UIController();
             Session = new StudySession()
@@ -48,9 +51,10 @@ namespace Flashcards.Controllers
                 "Press any key to return to main menu"
             }, "Results");
 
+            Session.Percentage = ((float)Session.QuestionsAnsweredCorrectly / (float)Session.QuestionsAnswered) * 100f;
             Console.ReadKey();
             dbController.AddStudySession(Session);
-            UI.MainMenu();
+            nav.MainMenu();
 
 
         }

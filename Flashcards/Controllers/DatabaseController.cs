@@ -143,12 +143,13 @@ namespace Flashcards.Controllers
                 try
                 {
                     connection.Open();
-                    string sql = "INSERT INTO StudySessions (TotalQuestions, CorrectAnswers, StudyDate, StackId) VALUES (@TotalQuestions, @CorrectAnswers, @StudyDate, @StackId)";
+                    string sql = "INSERT INTO StudySessions (TotalQuestions, CorrectAnswers, Percentage, StudyDate, StackId) VALUES (@TotalQuestions, @CorrectAnswers, @Percentage, @StudyDate, @StackId)";
 
                     using (var command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@TotalQuestions", session.QuestionsAnswered);
                         command.Parameters.AddWithValue("@CorrectAnswers", session.QuestionsAnsweredCorrectly);
+                        command.Parameters.AddWithValue("@Percentage", session.Percentage);
                         command.Parameters.AddWithValue("@StudyDate", session.StudyDate);
                         command.Parameters.AddWithValue("@StackId", session.CategoryId);
                         command.ExecuteNonQuery();
@@ -182,6 +183,54 @@ namespace Flashcards.Controllers
     ) AS SourceTable
     PIVOT (
        COUNT(SessionId)
+       FOR StudyMonth IN (' + @columns + ')
+    ) AS PivotTable;';
+    EXEC sp_executesql @sql, N'@year NVARCHAR(4)', @year;";
+
+            DataTable dataTable = new DataTable();
+            var history = new StudyHistory();
+            using (var connection = new SqlConnection(Constants.ConnectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlCommand command = new SqlCommand(sql, connection);
+
+                    command.Parameters.AddWithValue("@year", year);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        dataTable.Load(reader);
+                    }
+                }
+
+                catch { }
+            }
+
+            return dataTable;
+        }
+        public DataTable GetStudyAverages(string year)
+        {
+            string sql = @"DECLARE @columns NVARCHAR(MAX), @sql NVARCHAR(MAX);
+    SELECT @columns = STRING_AGG(QUOTENAME(StudyMonth), ',')
+    FROM (
+       SELECT DISTINCT FORMAT(StudyDate, 'MMM yyyy') AS StudyMonth
+       FROM StudySessions
+       WHERE FORMAT(StudyDate, 'yyyy') = @year
+    ) AS UniqueMonths;
+    SET @sql = '
+    SELECT * 
+    FROM (
+       SELECT
+           FORMAT(StudyDate, ''MMM yyyy'') AS StudyMonth,
+           Percentage,
+           StackId
+       FROM
+           StudySessions 
+    WHERE FORMAT(StudyDate, ''yyyy'') = @year
+    ) AS SourceTable
+    PIVOT (
+       AVG(Percentage)
        FOR StudyMonth IN (' + @columns + ')
     ) AS PivotTable;';
     EXEC sp_executesql @sql, N'@year NVARCHAR(4)', @year;";

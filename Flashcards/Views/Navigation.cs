@@ -15,15 +15,16 @@ namespace Flashcards.Views
     {
         public ListStore Store;
         public UIController UI;
-        public Verifier Verifier;
+
 
         public Navigation()
         {
 
             Store = new ListStore();
             UI = new UIController();
-            Verifier = new Verifier();
+
         }
+
         public void MainMenu()
         {
             Console.Clear();
@@ -46,8 +47,7 @@ namespace Flashcards.Views
                     EditCategoriesMenu();
                     break;
                 case "3":
-                    Console.WriteLine("Enter year");
-                    Store.GetHistory(Console.ReadLine());
+                    ShowHistory();
                     break;
                 case "0":
                     break;
@@ -56,6 +56,16 @@ namespace Flashcards.Views
             }
 
         }
+
+        public void ShowHistory()
+        {
+            Console.WriteLine("Enter year");
+            Store.GetHistory(Console.ReadLine());
+            Console.WriteLine("Press any key to return to main menu");
+            Console.ReadKey();
+            MainMenu();
+        }
+
         public void ShowCategories()
         {
 

@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace Flashcards.Verification
 {
-    public static class Verifier
+    internal static class Verifier
     {
-        public bool VerifyInput(string input)
+        public static bool VerifyInput(string input)
         {
             if (input == null || input == "") return false;
             else return true;
         }
 
-        public bool VerifyCategory(string input, ListStore store)
+        public static bool VerifyCategory(string input, ListStore store)
         {
             var categories = store.GetStacks();
             if (VerifyInput(input))

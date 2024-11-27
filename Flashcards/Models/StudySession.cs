@@ -13,6 +13,8 @@ namespace Flashcards.Models
         public int QuestionsAnswered {  get; set; }
         public int QuestionsAnsweredCorrectly { get; set; }
 
+        public float Percentage { get; set; }
+
         public DateTime StudyDate { get; set; }
     }
 }

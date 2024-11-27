@@ -142,7 +142,7 @@ namespace Flashcards.Controllers
 
         public void DisplayHistory(DataTable history)
         {
-            Console.Clear();
+            
             var table = new Table();
             table.AddColumn("Category");
             foreach(DataColumn column in history.Columns)
@@ -172,11 +172,7 @@ namespace Flashcards.Controllers
             }
 
             AnsiConsole.Write(table);
-            Console.WriteLine("Press any key to return to main menu");
 
-            Console.ReadKey();
-            Navigation nav = new Navigation();
-            nav.MainMenu();
 
 
 

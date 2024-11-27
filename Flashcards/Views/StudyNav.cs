@@ -13,14 +13,13 @@ namespace Flashcards.Views
     internal class StudyNav
     {
         UIController Ui;
-        Verifier Verifier;
         ListStore Store;
         StudyController Session;
 
         public StudyNav()
         {
             Ui = new UIController();
-            Verifier = new Verifier();
+
             Store = new ListStore();
         }
         public void CategorySelect()
