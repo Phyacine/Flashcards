@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Flashcards.NewFolder;
 using Flashcards.Models;
+using System.Collections;
+using System.Data;
 
 namespace Flashcards.Controllers
 {
@@ -132,6 +134,79 @@ namespace Flashcards.Controllers
                 }
                 catch { }
             }
+        }
+
+        public void AddStudySession(StudySession session)
+        {
+            using (var connection = new SqlConnection(Constants.ConnectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    string sql = "INSERT INTO StudySessions (TotalQuestions, CorrectAnswers, StudyDate, StackId) VALUES (@TotalQuestions, @CorrectAnswers, @StudyDate, @StackId)";
+
+                    using (var command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@TotalQuestions", session.QuestionsAnswered);
+                        command.Parameters.AddWithValue("@CorrectAnswers", session.QuestionsAnsweredCorrectly);
+                        command.Parameters.AddWithValue("@StudyDate", session.StudyDate);
+                        command.Parameters.AddWithValue("@StackId", session.CategoryId);
+                        command.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+            }
+        }
+        public DataTable GetStudyHistory(string year)
+        {
+            string sql = @"DECLARE @columns NVARCHAR(MAX), @sql NVARCHAR(MAX);
+    SELECT @columns = STRING_AGG(QUOTENAME(StudyMonth), ',')
+    FROM (
+       SELECT DISTINCT FORMAT(StudyDate, 'MMM yyyy') AS StudyMonth
+       FROM StudySessions
+       WHERE FORMAT(StudyDate, 'yyyy') = @year
+    ) AS UniqueMonths;
+    SET @sql = '
+    SELECT * 
+    FROM (
+       SELECT
+           FORMAT(StudyDate, ''MMM yyyy'') AS StudyMonth,
+           SessionId,
+           StackId
+       FROM
+           StudySessions 
+    WHERE FORMAT(StudyDate, ''yyyy'') = @year
+    ) AS SourceTable
+    PIVOT (
+       COUNT(SessionId)
+       FOR StudyMonth IN (' + @columns + ')
+    ) AS PivotTable;';
+    EXEC sp_executesql @sql, N'@year NVARCHAR(4)', @year;";
+
+            DataTable dataTable = new DataTable();
+            var history = new StudyHistory();
+            using (var connection = new SqlConnection(Constants.ConnectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlCommand command = new SqlCommand(sql, connection);
+
+                    command.Parameters.AddWithValue("@year", year);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        dataTable.Load(reader);
+                    }
+                }
+
+                catch { }
+            }
+
+            return dataTable;
         }
     }
 }

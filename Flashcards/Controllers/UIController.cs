@@ -1,9 +1,12 @@
 ﻿using Flashcards.Helpers;
+using Flashcards.Models;
 using Flashcards.NewFolder;
 using Flashcards.Stores;
+using Flashcards.Views;
 using Spectre.Console;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -135,6 +138,48 @@ namespace Flashcards.Controllers
                 table.AddRow($"{card.DtoId}", $"{card.Question}", $"{card.Answer}");
             }
             AnsiConsole.Write(table);
+        }
+
+        public void DisplayHistory(DataTable history)
+        {
+            Console.Clear();
+            var table = new Table();
+            table.AddColumn("Category");
+            foreach(DataColumn column in history.Columns)
+            {
+
+                if(column.ColumnName != "StackId")
+                {
+                    table.AddColumn(column.ColumnName);
+                }
+
+            }
+
+            foreach(DataRow category in history.Rows)
+            {
+                string item = ListStore.GetCategoryName(category["StackId"].ToString());
+                var rowValues = new List<string> { item };
+
+                foreach(DataColumn column in history.Columns)
+                {
+                    if(column.ColumnName != "StackId")
+                    {
+                        rowValues.Add(category[column].ToString());
+                    }
+                }
+                table.AddRow(rowValues.ToArray());
+
+            }
+
+            AnsiConsole.Write(table);
+            Console.WriteLine("Press any key to return to main menu");
+
+            Console.ReadKey();
+            Navigation nav = new Navigation();
+            nav.MainMenu();
+
+
+
         }
     }
 }

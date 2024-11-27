@@ -39,12 +39,15 @@ namespace Flashcards.Views
             switch (input)
             {
                 case "1":
-                    ShowCategories();
+                    StudyNav study = new StudyNav();
+                    study.CategorySelect();
                     break;
                 case "2":
                     EditCategoriesMenu();
                     break;
                 case "3":
+                    Console.WriteLine("Enter year");
+                    Store.GetHistory(Console.ReadLine());
                     break;
                 case "0":
                     break;

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Flashcards.Verification
 {
-    internal class Verifier
+    public static class Verifier
     {
         public bool VerifyInput(string input)
         {

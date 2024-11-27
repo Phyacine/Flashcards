@@ -29,7 +29,49 @@ namespace Flashcards.Helpers
                     "StackId INT NOT NULL FOREIGN KEY REFERENCES Stacks(StackId) ON DELETE CASCADE); " +
                     "END ";
             Execute(flashCardsQuery);
+
+            string studySessionsQuery = "IF NOT EXISTS (SELECT * FROM sys.Tables " +
+                "WHERE Name = 'StudySessions')" +
+                "BEGIN CREATE TABLE StudySessions(" +
+                "SessionId INT IDENTITY(1,1) PRIMARY KEY, " +
+                "TotalQuestions INT," +
+                "CorrectAnswers INT," +
+                "StudyDate DATETIME," +
+                "StackId INT NOT NULL FOREIGN KEY REFERENCES" +
+                " Stacks(StackId) ON DELETE CASCADE);" +
+                "END";
+            Execute(studySessionsQuery);
         }
+
+        public void PivotTable()
+        {
+            string sql = "DECLARE @columns NVARCHAR(max), @sql NVARCHAR(MAX);" +
+                "SELECT @columns = STRING_AGG(QUOTENAME(StudyMonth), ',')" +
+                "FROM (" +
+                "   SELECT DISTINCT FORMAT(StudyDate, 'MMM yyyy') AS StudyMonth " +
+                "   FROM StudySessions" +
+                ") AS UniqueMonths;" +
+                "SET @sql = '" +
+                "SELECT * " +
+                "FROM (" +
+                "   SELECT" +
+                "       FORMAT(StudyDate, ''MMM yyyy'') AS StudyMonth," +
+                "       SessionId" +
+                "   FROM" +
+                "       StudySessions" +
+                ") AS SourceTable" +
+                "PIVOT (" +
+                "   COUNT(SessionId)" +
+                "   FOR StudyMonth IN (' + @columns + ')" +
+                ") AS PivotTable;';" +
+                "EXEC sp_executesql @sql";
+        }
+
+        public void ExecuteReader(string query)
+        {
+
+        }
+
         public void Execute(string query)
         {
             using (var connection = new SqlConnection(Constants.ConnectionString))
@@ -42,7 +84,12 @@ namespace Flashcards.Helpers
                         command.ExecuteNonQuery();
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    Console.ReadLine();
+                }
+
             }
 
         }

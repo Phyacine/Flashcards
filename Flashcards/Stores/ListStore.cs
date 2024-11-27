@@ -5,6 +5,7 @@ using Flashcards.NewFolder;
 using Flashcards.Verification;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +30,19 @@ namespace Flashcards.Stores
 
             popLists.PopulateAll(Cards, CardsDto, Stacks);
 
+        }
+        public static string GetCategoryName(string id)
+        {
+            return Stacks.Find(a => a.StackId == int.Parse(id)).StackName;
+        }
+
+        public void GetHistory(string year)
+        {
+            DataTable table =  dbAccess.GetStudyHistory(year);
+
+            UIController ui = new UIController();
+            ui.DisplayHistory(table);
+            
         }
         public StackItem CurrentSelected()
         {
